@@ -4,12 +4,20 @@ type Query {
 }
 
 type User {
+  id: ID!
   username: String!
   createdAt: String!
+  snaps: [Snap!]!
 }
 
 type Mutation {
-  createUser(data: CreateUserInput!): User
+  createUser(data: CreateUserInput!): Token
+  signInUser(data: SigninUserInput!): Token
+}
+
+input SigninUserInput {
+  username: String!
+  password: String!
 }
 
 input CreateUserInput {
