@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const { ApolloServer } = require('apollo-server-express');
 const { importSchema } = require('graphql-import');
 // Config env variables by dotenv
@@ -7,9 +8,15 @@ require('dotenv').config();
 const resolvers = require('./graphql/resolvers');
 
 const server = new ApolloServer({
-  typeDefs: importSchema('./graphql/types/schema.graphql'),
+  typeDefs: importSchema('./graphql/schema.graphql'),
   resolvers,
 });
+
+// Connection to MongoDB
+mongoose
+  .connect(process.env.DB_URI, { useNewUrlParser: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.log(err));
 
 const app = express();
 server.applyMiddleware({ app });
