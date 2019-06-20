@@ -7,6 +7,7 @@ require('dotenv').config();
 
 // Models
 const User = require('./models/User');
+const Snap = require('./models/Snap');
 
 const resolvers = require('./graphql/resolvers');
 
@@ -15,6 +16,7 @@ const server = new ApolloServer({
   resolvers,
   context: {
     User,
+    Snap,
   },
 });
 

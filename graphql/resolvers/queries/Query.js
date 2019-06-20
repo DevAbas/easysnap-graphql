@@ -5,6 +5,9 @@ const Query = {
   users: async (parent, args, { User }) => {
     return await User.find({}).sort({ createdAt: 'desc' });
   },
+  snap: async (parent, args, { Snap }) => {
+    return await Snap.findById(args.id);
+  },
 };
 
 module.exports = Query;
