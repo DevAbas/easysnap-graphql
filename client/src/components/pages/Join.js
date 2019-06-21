@@ -1,51 +1,71 @@
 import React, { useState } from 'react';
+import { Mutation } from 'react-apollo';
+import { CREATE_USER } from '../../queries';
+import Error from '../Error';
 
 function Join() {
-  const [state, setState] = useState({
-    username: '',
-    password: '',
-    passwordConfirm: '',
-  });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
 
-  const onChangeHandler = e => {
-    setState({
-      [e.target.name]: e.target.value,
-    });
+  const formInvalid = () => {
+    const isInvalid =
+      !username ||
+      !password ||
+      !passwordConfirm ||
+      password !== passwordConfirm;
+
+    return isInvalid;
+  };
+
+  const onSumitHandler = (e, createUser) => {
+    e.preventDefault();
+    createUser()
+      .then(data => setUsername(''), setPassword(''), setPasswordConfirm(''))
+      .catch(err => console.log(err));
   };
   return (
     <div>
-      <form class='user-form'>
-        <label>
-          <input
-            type='text'
-            name='username'
-            placeholder='username'
-            value={state.username}
-            onChange={onChangeHandler}
-          />
-        </label>
-        <label>
-          <input
-            type='password'
-            name='password'
-            placeholder='password'
-            value={state.password}
-            onChange={onChangeHandler}
-          />
-        </label>
-        <label>
-          <input
-            type='password'
-            name='passwordConfirm'
-            placeholder='confirm password'
-            value={state.passwordConfirm}
-            onChange={onChangeHandler}
-          />
-        </label>
-        <label>
-          <button>Join</button>
-        </label>
-      </form>
+      <Mutation mutation={CREATE_USER} variables={{ username, password }}>
+        {(createUser, { loading, error }) => (
+          <form
+            className='user-form'
+            onSubmit={e => onSumitHandler(e, createUser)}>
+            <label>
+              <input
+                type='text'
+                name='username'
+                placeholder='username'
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+              />
+            </label>
+            <label>
+              <input
+                type='password'
+                name='password'
+                placeholder='password'
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </label>
+            <label>
+              <input
+                type='password'
+                name='passwordConfirm'
+                placeholder='confirm password'
+                value={passwordConfirm}
+                onChange={e => setPasswordConfirm(e.target.value)}
+              />
+            </label>
+            <label>
+              <button disabled={loading || formInvalid()}>Join</button>
+            </label>
+            {loading && <div>Loading...</div>}
+            {error && <Error error={error} />}
+          </form>
+        )}
+      </Mutation>
     </div>
   );
 }
