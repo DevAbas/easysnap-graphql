@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Mutation } from 'react-apollo';
+import { withRouter } from 'react-router-dom';
 import { CREATE_USER } from '../../queries';
 import Error from '../Error';
 
-function Join() {
+function Join(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -21,12 +22,14 @@ function Join() {
   const onSumitHandler = (e, createUser) => {
     e.preventDefault();
     createUser()
-      .then(
-        ({ data }) => localStorage.setItem('token', data.createUser.token),
-        setUsername(''),
-        setPassword(''),
-        setPasswordConfirm('')
-      )
+      .then(async ({ data }) => {
+        localStorage.setItem('token', data.createUser.token);
+        setUsername('');
+        setPassword('');
+        setPasswordConfirm('');
+        await props.refetch();
+        props.history.push('/');
+      })
       .catch(err => console.log(err));
   };
   return (
@@ -75,4 +78,4 @@ function Join() {
   );
 }
 
-export default Join;
+export default withRouter(Join);

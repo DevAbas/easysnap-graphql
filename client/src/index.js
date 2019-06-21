@@ -7,6 +7,16 @@ import App from './components/App';
 
 const client = new ApolloClient({
   uri: 'http://localhost:4001/graphql',
+  fetchOptions: {
+    credentials: 'include',
+  },
+  request: operation => {
+    operation.setContext({
+      headers: {
+        authorization: localStorage.getItem('token'),
+      },
+    });
+  },
 });
 
 ReactDOM.render(

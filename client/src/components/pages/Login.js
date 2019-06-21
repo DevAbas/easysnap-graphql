@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Mutation } from 'react-apollo';
+import { withRouter } from 'react-router-dom';
 import { SIGNIN_USER } from '../../queries';
 import Error from '../Error';
 
-function Login() {
+function Login(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,11 +16,13 @@ function Login() {
   const onSubmitHandler = (e, signInUser) => {
     e.preventDefault();
     signInUser()
-      .then(
-        ({ data }) => localStorage.setItem('token', data.signInUser.token),
-        setUsername(''),
-        setPassword('')
-      )
+      .then(async ({ data }) => {
+        localStorage.setItem('token', data.signInUser.token);
+        setUsername('');
+        setPassword('');
+        await props.refetch();
+        props.history.push('/');
+      })
       .catch(err => console.log(err));
   };
 
@@ -58,4 +61,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default withRouter(Login);

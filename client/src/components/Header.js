@@ -1,7 +1,22 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
+import Logout from './Logout';
 
-function Header() {
+const LinksWithLogin = ({ session }) => (
+  <Fragment>
+    <NavLink to='/profile'>@{session.activeUser.username}</NavLink>
+    <Logout />
+  </Fragment>
+);
+
+const LinksWithUnLogin = () => (
+  <Fragment>
+    <NavLink to='/join'>join</NavLink>
+    <NavLink to='/login'>login</NavLink>
+  </Fragment>
+);
+
+function Header({ session }) {
   return (
     <div className='header'>
       <div className='logo'>
@@ -12,8 +27,11 @@ function Header() {
         <NavLink to='/' exact>
           snaps
         </NavLink>
-        <NavLink to='/join'>join</NavLink>
-        <NavLink to='/login'>login</NavLink>
+        {session.activeUser ? (
+          <LinksWithLogin session={session} />
+        ) : (
+          <LinksWithUnLogin />
+        )}
       </div>
     </div>
   );
