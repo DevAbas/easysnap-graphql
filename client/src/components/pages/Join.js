@@ -21,7 +21,12 @@ function Join() {
   const onSumitHandler = (e, createUser) => {
     e.preventDefault();
     createUser()
-      .then(data => setUsername(''), setPassword(''), setPasswordConfirm(''))
+      .then(
+        ({ data }) => localStorage.setItem('token', data.createUser.token),
+        setUsername(''),
+        setPassword(''),
+        setPasswordConfirm('')
+      )
       .catch(err => console.log(err));
   };
   return (
