@@ -1,8 +1,8 @@
 module.exports = {
-  createSnap: async (parent, { data: { user_id, text } }, { Snap }) => {
+  createSnap: async (parent, { data: { text, user_id } }, { Snap }) => {
     const newSnap = await new Snap({
-      user_id,
       text,
+      user_id,
     });
 
     return newSnap.save();

@@ -20,7 +20,7 @@ const Root = ({ refetch, session }) => (
     <Fragment>
       <Header session={session} />
       <Switch>
-        <Route exact path='/' component={Home} />
+        <Route exact path='/' render={() => <Home session={session} />} />
         <Route path='/join' render={() => <Join refetch={refetch} />} />
         <Route path='/login' render={() => <Login refetch={refetch} />} />
         <Route path='/profile' render={() => <Profile session={session} />} />
