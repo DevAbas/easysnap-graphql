@@ -1,5 +1,7 @@
 const { gql } = require('apollo-boost');
 
+// user mutations
+
 export const CREATE_USER = gql`
   mutation($username: String!, $password: String!) {
     createUser(data: { username: $username, password: $password }) {
@@ -16,30 +18,21 @@ export const SIGNIN_USER = gql`
   }
 `;
 
-export const ADD_SNAP = gql`
-  mutation($text: String!, $user_id: ID!) {
-    createSnap(data: { text: $text, user_id: $user_id }) {
+export const GET_ACTIVE_USER = gql`
+  query {
+    activeUser {
       id
-      text
+      username
       createdAt
-      user {
-        id
-        username
+      snaps {
+        text
         createdAt
       }
     }
   }
 `;
 
-export const GET_ACTIVE_USER = gql`
-  query {
-    activeUser {
-      id
-      username
-    }
-  }
-`;
-
+// Homepage
 export const GET_SNAPS = gql`
   query {
     snaps {
@@ -49,7 +42,44 @@ export const GET_SNAPS = gql`
       user {
         id
         username
-        createdAt
+      }
+    }
+  }
+`;
+
+export const ADD_SNAP = gql`
+  mutation($text: String!, $user_id: ID!) {
+    createSnap(data: { text: $text, user_id: $user_id }) {
+      id
+      text
+      createdAt
+      user {
+        id
+        username
+      }
+    }
+  }
+`;
+
+// subscriptions
+export const USER_CREATED = gql`
+  subscription {
+    user {
+      id
+      username
+    }
+  }
+`;
+
+export const SNAP_CREATED = gql`
+  subscription($userId: ID) {
+    snap(userId: $userId) {
+      id
+      text
+      createdAt
+      user {
+        id
+        username
       }
     }
   }

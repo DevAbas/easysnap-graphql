@@ -41,7 +41,6 @@ app.use(async (req, res, next) => {
     try {
       const activeUser = await jwt.verify(token, process.env.SECRET_KEY);
       req.activeUser = activeUser;
-      console.log(activeUser);
     } catch (e) {
       console.log(e);
     }
@@ -55,6 +54,6 @@ server.applyMiddleware({ app });
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
-httpServer.listen({ port: 4001 }, () =>
+httpServer.listen(process.env.PORT || { port: 4001 }, () =>
   console.log(`Server ready at http://localhost:4001${server.graphqlPath}`)
 );

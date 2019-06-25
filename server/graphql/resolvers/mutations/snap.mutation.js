@@ -4,11 +4,11 @@ module.exports = {
       const newSnap = await new Snap({
         text,
         user_id,
-      });
+      }).save();
       pubsub.publish('snap added', {
         snap: newSnap,
       });
-      return newSnap.save();
+      return newSnap;
     } catch (e) {
       throw new Error(e);
     }

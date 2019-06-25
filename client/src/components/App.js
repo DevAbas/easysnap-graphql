@@ -10,7 +10,7 @@ import SessionWrapperHOC from './SessionWrapperHOC';
 // Components
 import Header from './Header';
 // Pages
-import Home from './pages/Home';
+import Home from './pages/Home/Home';
 import Join from './pages/Join';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
