@@ -26,3 +26,7 @@ input CreateUserInput {
   username: String!
   password: String!
 }
+
+type Subscription {
+  user: User!
+}

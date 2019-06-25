@@ -1,7 +1,8 @@
+const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer, PubSub } = require('apollo-server-express');
 const { importSchema } = require('graphql-import');
 // Config env variables by dotenv
 require('dotenv').config();
@@ -12,13 +13,16 @@ const Snap = require('./models/Snap');
 
 const resolvers = require('./graphql/resolvers');
 
+const pubsub = new PubSub();
+
 const server = new ApolloServer({
   typeDefs: importSchema('./graphql/schema.graphql'),
   resolvers,
   context: ({ req }) => ({
     User,
     Snap,
-    activeUser: req.activeUser,
+    pubsub,
+    activeUser: req ? req.activeUser : '',
   }),
 });
 
@@ -48,6 +52,9 @@ app.use(async (req, res, next) => {
 
 server.applyMiddleware({ app });
 
-app.listen({ port: 4001 }, () =>
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
+httpServer.listen({ port: 4001 }, () =>
   console.log(`Server ready at http://localhost:4001${server.graphqlPath}`)
 );

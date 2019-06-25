@@ -141,6 +141,13 @@ li:nth-child(5) {
   font-weight: bold;
 }
 
+.snaps li.optimistic {
+  opacity: 0.5;
+  -webkit-animation: none;
+  animation: none;
+  transition: none;
+}
+
 .loading{
   text-align: center;
   padding: 1rem

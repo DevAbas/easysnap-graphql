@@ -2,7 +2,11 @@ const bcrypt = require('bcrypt');
 const token = require('../../../helpers/token');
 
 module.exports = {
-  createUser: async (parent, { data: { username, password } }, { User }) => {
+  createUser: async (
+    parent,
+    { data: { username, password } },
+    { User, pubsub }
+  ) => {
     const user = await User.findOne({ username });
 
     // If user is already exists return error message
@@ -10,10 +14,16 @@ module.exports = {
       throw new Error('User already exists');
     }
 
+    // Save to the MongoDB
     const newUser = await new User({
       username,
       password,
     }).save();
+
+    // For publishing to the user added room
+    pubsub.publish('user created', {
+      user: newUser,
+    });
 
     return { token: token.generate(newUser, '1hr') };
   },

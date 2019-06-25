@@ -19,9 +19,35 @@ function Home({ session }) {
   const onSubmitHandler = (e, createSnap) => {
     e.preventDefault();
     if (text.trim() !== '') {
-      createSnap().then(({ data }) => console.log(data));
       setText('');
+      createSnap().then(({ data }) => console.log(data));
     }
+  };
+  const updateCache = (cache, { data: { createSnap } }) => {
+    const { snaps } = cache.readQuery({
+      query: GET_SNAPS,
+    });
+    cache.writeQuery({
+      query: GET_SNAPS,
+      data: {
+        snaps: [createSnap, ...snaps],
+      },
+    });
+  };
+
+  // Optimistic response parametrs
+  const optimisticResponse = {
+    __typename: 'Mutation',
+    createSnap: {
+      __typename: 'Snap',
+      id: Math.round(Math.random() * -200000),
+      text,
+      createdAt: Date.now(),
+      user: {
+        __typename: 'User',
+        ...session.activeUser,
+      },
+    },
   };
   return (
     <React.Fragment>
@@ -35,7 +61,9 @@ function Home({ session }) {
         <Mutation
           mutation={ADD_SNAP}
           variables={{ text, user_id }}
-          refetchQueries={[{ query: GET_SNAPS }]}>
+          // refetchQueries={[{ query: GET_SNAPS }]}>
+          update={updateCache}
+          optimisticResponse={optimisticResponse}>
           {(createSnap, { loading, error }) => (
             <form onSubmit={e => onSubmitHandler(e, createSnap)}>
               <input
@@ -43,7 +71,7 @@ function Home({ session }) {
                 type='text'
                 value={text}
                 onChange={e => setText(e.target.value)}
-                disabled={!(session && session.activeUser) || loading}
+                disabled={!(session && session.activeUser)}
                 placeholder={
                   session && session.activeUser
                     ? 'add snap'
@@ -65,12 +93,18 @@ function Home({ session }) {
                 <div>
                   <ul className='snaps'>
                     {data.snaps.map(snap => (
-                      <li key={snap.id}>
+                      <li
+                        key={snap.id}
+                        className={snap.id < 0 ? 'optimistic' : ''}>
                         <div className='title'>{snap.text}</div>
                         <div className='date'>
                           <span>@{snap.user.username} </span>
                           <span>
-                            <TimeAgo date={snap.createdAt} />
+                            {snap.id < 0 ? (
+                              'Sendig...'
+                            ) : (
+                              <TimeAgo date={snap.createdAt} />
+                            )}
                           </span>
                         </div>
                       </li>
